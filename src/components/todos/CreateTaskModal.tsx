@@ -23,6 +23,9 @@ export function CreateTaskModal({ isOpen, onClose, onSuccess }: CreateTaskModalP
   const [isLoading, setIsLoading] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
   const { user: authUser } = useAuthStore();
+  
+  const today = new Date();
+  const todayDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
   const {
     register,
@@ -191,6 +194,7 @@ export function CreateTaskModal({ isOpen, onClose, onSuccess }: CreateTaskModalP
                 label="Due Date"
                 type="date"
                 optional
+                min={todayDate}
                 icon={<Calendar className="h-5 w-5" />}
                 error={errors.dueDate?.message}
                 {...register('dueDate')}
