@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { TodoItem, TodoPriority } from '@/types/todo';
 import { Clock, CheckCircle2, AlertCircle, Flag } from 'lucide-react';
+import { todosService } from '@/services/todos.service';
 
 interface KanbanCardProps {
   todo: TodoItem;
@@ -12,6 +13,21 @@ interface KanbanCardProps {
 }
 
 export function KanbanCard({ todo, index, onClick }: KanbanCardProps) {
+  const [progress, setProgress] = useState(todo.progress || 0);
+
+  const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProgress(Number(e.target.value));
+  };
+
+  const handleProgressCommit = async () => {
+    if (progress === todo.progress) return;
+    try {
+      await todosService.patchTodo(todo._id, { progress });
+    } catch (error) {
+      console.error('Failed to update progress', error);
+    }
+  };
+
   const isOverdue = todo.dueDate && new Date(todo.dueDate).getTime() < Date.now() && todo.status !== 'Completed';
 
   return (
@@ -46,6 +62,28 @@ export function KanbanCard({ todo, index, onClick }: KanbanCardProps) {
           <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-4">
             {todo.description}
           </p>
+
+          <div
+            className="mb-4"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Progress</span>
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{progress}%</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={progress}
+              onChange={handleProgressChange}
+              onMouseUp={handleProgressCommit}
+              onTouchEnd={handleProgressCommit}
+              className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-blue-500"
+            />
+          </div>
 
           <div className="flex items-center justify-between mt-auto">
             <div className="flex items-center gap-2">

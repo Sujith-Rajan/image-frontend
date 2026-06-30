@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Search, Filter, MoreVertical, Edit2, Trash2, ArrowUpDown } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Search, Filter, ArrowUpDown } from 'lucide-react';
 
 import { TodoItem, TodoStatus, TodoPriority, MOCK_TODOS } from '@/types/todo';
 
@@ -11,6 +11,38 @@ interface TodoTableProps {
 
 export function TodoTable({ todos }: TodoTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<TodoStatus | 'All'>('All');
+  const [priorityFilter, setPriorityFilter] = useState<TodoPriority | 'All'>('All');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'none'>('none');
+
+  const filteredAndSortedTodos = useMemo(() => {
+    let result = todos;
+
+    if (searchTerm) {
+      const lower = searchTerm.toLowerCase();
+      result = result.filter(t => 
+        t.title.toLowerCase().includes(lower) || 
+        t.category?.toLowerCase().includes(lower)
+      );
+    }
+
+    if (statusFilter !== 'All') {
+      result = result.filter(t => t.status === statusFilter);
+    }
+
+    if (priorityFilter !== 'All') {
+      result = result.filter(t => t.priority === priorityFilter);
+    }
+
+    if (sortOrder !== 'none') {
+      result = [...result].sort((a, b) => {
+        if (sortOrder === 'asc') return a.progress - b.progress;
+        return b.progress - a.progress;
+      });
+    }
+
+    return result;
+  }, [todos, searchTerm, statusFilter, priorityFilter, sortOrder]);
   
   return (
     <div className="w-full text-slate-900 dark:text-slate-100">
@@ -28,12 +60,35 @@ export function TodoTable({ todos }: TodoTableProps) {
           />
         </div>
         
-        <div className="flex gap-3 w-full md:w-auto">
-          <button className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-sm font-medium">
-            <Filter className="w-4 h-4" /> Filter
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-sm font-medium">
-            <ArrowUpDown className="w-4 h-4" /> Sort
+        <div className="flex flex-wrap gap-3 w-full md:w-auto">
+          <select 
+            value={statusFilter} 
+            onChange={(e) => setStatusFilter(e.target.value as any)}
+            className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium outline-none text-slate-700 dark:text-slate-300"
+          >
+            <option value="All">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+          
+          <select 
+            value={priorityFilter} 
+            onChange={(e) => setPriorityFilter(e.target.value as any)}
+            className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium outline-none text-slate-700 dark:text-slate-300"
+          >
+            <option value="All">All Priorities</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+
+          <button 
+            onClick={() => setSortOrder(prev => prev === 'none' ? 'desc' : prev === 'desc' ? 'asc' : 'none')}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-sm font-medium text-slate-700 dark:text-slate-300"
+          >
+            <ArrowUpDown className="w-4 h-4" /> 
+            Sort Progress {sortOrder === 'asc' ? '↑' : sortOrder === 'desc' ? '↓' : ''}
           </button>
         </div>
       </div>
@@ -48,11 +103,10 @@ export function TodoTable({ todos }: TodoTableProps) {
               <th className="px-6 py-4">Priority</th>
               <th className="px-6 py-4">Assigned To</th>
               <th className="px-6 py-4">Progress</th>
-              <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50 bg-white dark:bg-slate-900">
-            {todos.map((todo) => (
+            {filteredAndSortedTodos.map((todo) => (
               <tr key={todo._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
@@ -78,19 +132,6 @@ export function TodoTable({ todos }: TodoTableProps) {
                       />
                     </div>
                     <span className="text-xs font-medium text-slate-500">{todo.progress}%</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                    <button className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                      <MoreVertical className="w-4 h-4" />
-                    </button>
                   </div>
                 </td>
               </tr>
