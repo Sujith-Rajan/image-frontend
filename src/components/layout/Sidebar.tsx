@@ -10,7 +10,8 @@ import {
   Settings,
   LogOut,
   User,
-  Users
+  Users,
+  Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
@@ -19,6 +20,7 @@ import { authService } from '@/services/auth.service';
 const NAV_ITEMS = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'My Tasks', href: '/dashboard/tasks', icon: ListTodo },
+  { name: 'Attendance', href: '/dashboard/attendance', icon: Clock },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
