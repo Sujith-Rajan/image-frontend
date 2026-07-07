@@ -7,8 +7,8 @@ export const todosService = {
     });
   },
 
-  getRecentTodos: async () => {
-    return apiFetch(`/todos/recent`, {
+  getRecentTodos: async (page = 1, limit = 10) => {
+    return apiFetch(`/todos/recent?page=${page}&limit=${limit}`, {
       method: 'GET',
     });
   },

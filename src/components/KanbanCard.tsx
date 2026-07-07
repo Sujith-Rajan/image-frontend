@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { TodoItem, TodoPriority } from '@/types/todo';
-import { Clock, CheckCircle2, AlertCircle, Flag } from 'lucide-react';
+import { Clock, CheckCircle2, AlertCircle, Flag, GripHorizontal } from 'lucide-react';
 import { todosService } from '@/services/todos.service';
 
 interface KanbanCardProps {
@@ -14,6 +14,10 @@ interface KanbanCardProps {
 
 export function KanbanCard({ todo, index, onClick }: KanbanCardProps) {
   const [progress, setProgress] = useState(todo.progress || 0);
+
+  React.useEffect(() => {
+    setProgress(todo.progress || 0);
+  }, [todo.progress]);
 
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProgress(Number(e.target.value));
@@ -38,7 +42,7 @@ export function KanbanCard({ todo, index, onClick }: KanbanCardProps) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           className={`
-            bg-white dark:bg-slate-900 p-4 mb-3 rounded-2xl border cursor-pointer
+            bg-white dark:bg-slate-900 p-4 mb-3 rounded-2xl border cursor-grab active:cursor-grabbing
             ${snapshot.isDragging
               ? 'border-blue-500 shadow-xl shadow-blue-500/10 z-50 rotate-1'
               : 'border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800'
@@ -49,9 +53,12 @@ export function KanbanCard({ todo, index, onClick }: KanbanCardProps) {
           style={provided.draggableProps.style}
         >
           <div className="flex justify-between items-start mb-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
-              {todo.category}
-            </span>
+            <div className="flex items-center gap-2">
+              <GripHorizontal className="w-4 h-4 text-slate-300 dark:text-slate-600 opacity-50 group-hover:opacity-100 transition-opacity" />
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
+                {todo.category}
+              </span>
+            </div>
             <PriorityIndicator priority={todo.priority} />
           </div>
 

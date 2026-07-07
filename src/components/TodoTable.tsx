@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Filter, ArrowUpDown } from 'lucide-react';
 
-import { TodoItem, TodoStatus, TodoPriority, MOCK_TODOS } from '@/types/todo';
+import { TodoItem, TodoStatus, TodoPriority, } from '@/types/todo';
 
 interface TodoTableProps {
   todos: any[];
@@ -20,8 +20,8 @@ export function TodoTable({ todos }: TodoTableProps) {
 
     if (searchTerm) {
       const lower = searchTerm.toLowerCase();
-      result = result.filter(t => 
-        t.title.toLowerCase().includes(lower) || 
+      result = result.filter(t =>
+        t.title.toLowerCase().includes(lower) ||
         t.category?.toLowerCase().includes(lower)
       );
     }
@@ -43,26 +43,26 @@ export function TodoTable({ todos }: TodoTableProps) {
 
     return result;
   }, [todos, searchTerm, statusFilter, priorityFilter, sortOrder]);
-  
+
   return (
     <div className="w-full text-slate-900 dark:text-slate-100">
-      
+
       {/* Toolbar */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div className="relative w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-          <input 
-            type="text" 
-            placeholder="Search tasks..." 
+          <input
+            type="text"
+            placeholder="Search tasks..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
           />
         </div>
-        
+
         <div className="flex flex-wrap gap-3 w-full md:w-auto">
-          <select 
-            value={statusFilter} 
+          <select
+            value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
             className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium outline-none text-slate-700 dark:text-slate-300"
           >
@@ -71,9 +71,9 @@ export function TodoTable({ todos }: TodoTableProps) {
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
           </select>
-          
-          <select 
-            value={priorityFilter} 
+
+          <select
+            value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value as any)}
             className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium outline-none text-slate-700 dark:text-slate-300"
           >
@@ -83,11 +83,11 @@ export function TodoTable({ todos }: TodoTableProps) {
             <option value="High">High</option>
           </select>
 
-          <button 
+          <button
             onClick={() => setSortOrder(prev => prev === 'none' ? 'desc' : prev === 'desc' ? 'asc' : 'none')}
             className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-sm font-medium text-slate-700 dark:text-slate-300"
           >
-            <ArrowUpDown className="w-4 h-4" /> 
+            <ArrowUpDown className="w-4 h-4" />
             Sort Progress {sortOrder === 'asc' ? '↑' : sortOrder === 'desc' ? '↓' : ''}
           </button>
         </div>
@@ -126,8 +126,8 @@ export function TodoTable({ todos }: TodoTableProps) {
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="w-24 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-blue-500 rounded-full transition-all duration-500" 
+                      <div
+                        className="h-full bg-blue-500 rounded-full transition-all duration-500"
                         style={{ width: `${todo.progress}%` }}
                       />
                     </div>

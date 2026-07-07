@@ -10,11 +10,21 @@ interface KanbanBoardProps {
   initialTodos: TodoItem[];
   onCardClick?: (todo: TodoItem) => void;
   onUpdate?: () => void;
+  fetchNextPage?: () => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
 }
 
 const STATUSES: TodoStatus[] = ['Pending', 'In Progress', 'Completed'];
 
-export function KanbanBoard({ initialTodos, onCardClick, onUpdate }: KanbanBoardProps) {
+export function KanbanBoard({ 
+  initialTodos, 
+  onCardClick, 
+  onUpdate,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage
+}: KanbanBoardProps) {
   const [todos, setTodos] = useState<TodoItem[]>(initialTodos);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -92,7 +102,7 @@ export function KanbanBoard({ initialTodos, onCardClick, onUpdate }: KanbanBoard
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex flex-col lg:flex-row gap-6 items-start overflow-x-auto pb-4">
+      <div className="flex gap-6 items-start overflow-x-auto pb-4 px-2">
         {STATUSES.map((status) => (
           <KanbanColumn
             key={status}
@@ -100,6 +110,9 @@ export function KanbanBoard({ initialTodos, onCardClick, onUpdate }: KanbanBoard
             title={status}
             todos={todos.filter(todo => todo.status === status)}
             onCardClick={onCardClick}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
           />
         ))}
       </div>

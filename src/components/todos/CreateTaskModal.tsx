@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { X, CheckSquare, AlignLeft, Tag, Flag, Calendar, Users, Percent } from 'lucide-react';
+import { X, CheckSquare, AlignLeft, Tag, Flag, Calendar, Users, Percent, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { InputField } from '@/components/ui/InputField';
@@ -31,6 +31,7 @@ export function CreateTaskModal({ isOpen, onClose, onSuccess }: CreateTaskModalP
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<CreateTodoFormData>({
     resolver: zodResolver(createTodoSchema),
@@ -38,7 +39,13 @@ export function CreateTaskModal({ isOpen, onClose, onSuccess }: CreateTaskModalP
       status: 'Pending',
       progress: 0,
       priority: 'Medium',
+      subTasks: [],
     }
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "subTasks",
   });
 
   useEffect(() => {
@@ -199,6 +206,45 @@ export function CreateTaskModal({ isOpen, onClose, onSuccess }: CreateTaskModalP
                 error={errors.dueDate?.message}
                 {...register('dueDate')}
               />
+            </div>
+
+            <div className="w-full pt-2">
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Subtasks</label>
+                <button
+                  type="button"
+                  onClick={() => append({ title: '', isCompleted: false })}
+                  className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4" /> Add Subtask
+                </button>
+              </div>
+              <div className="space-y-3">
+                {fields.map((field, index) => (
+                  <div key={field.id} className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        placeholder="Subtask description..."
+                        className="block w-full py-2.5 px-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        {...register(`subTasks.${index}.title` as const)}
+                      />
+                      {errors?.subTasks?.[index]?.title && (
+                        <p className="mt-1 text-xs text-rose-500">
+                          {errors?.subTasks?.[index]?.title?.message}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="p-2.5 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
 
           </form>

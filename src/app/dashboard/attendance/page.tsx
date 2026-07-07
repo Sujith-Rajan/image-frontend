@@ -111,7 +111,7 @@ export default function AttendancePage() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
-      <header className="flex justify-between items-center">
+      <header className="flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
           <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Attendance
@@ -124,9 +124,9 @@ export default function AttendancePage() {
 
       {/* Check In / Check Out Card */}
       {(!targetUserId || targetUserId === user?._id) && (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
               <Clock className="w-8 h-8 text-blue-500" />
             </div>
             <div>
@@ -139,23 +139,23 @@ export default function AttendancePage() {
             </div>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 w-full md:w-auto">
             {!todayRecord ? (
               <button
                 onClick={handleCheckIn}
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-emerald-500/25 flex items-center gap-2"
+                className="w-full md:w-auto bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-emerald-500/25 flex items-center justify-center gap-2"
               >
                 <CheckCircle className="w-5 h-5" /> Check In
               </button>
             ) : !todayRecord.checkOutTime ? (
               <button
                 onClick={handleCheckOut}
-                className="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-rose-500/25 flex items-center gap-2"
+                className="w-full md:w-auto bg-rose-500 hover:bg-rose-600 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-rose-500/25 flex items-center justify-center gap-2"
               >
                 <CheckCircle className="w-5 h-5" /> Check Out
               </button>
             ) : (
-              <div className="px-8 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold flex items-center gap-2">
+              <div className="w-full md:w-auto px-8 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold flex items-center justify-center gap-2">
                 <CheckCircle className="w-5 h-5" /> Shift Completed
               </div>
             )}

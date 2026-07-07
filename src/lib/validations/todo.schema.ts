@@ -27,6 +27,14 @@ export const createTodoSchema = z.object({
   assignedTo: z
     .string()
     .optional(),
+  subTasks: z
+    .array(
+      z.object({
+        title: z.string().min(1, 'Subtask title is required'),
+        isCompleted: z.boolean(),
+      })
+    )
+    .optional(),
 });
 
 export type CreateTodoFormData = z.infer<typeof createTodoSchema>;

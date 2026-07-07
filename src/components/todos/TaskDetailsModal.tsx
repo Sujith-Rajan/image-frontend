@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Play, Square, MessageSquare, Clock, AlertCircle, CheckCircle2, Flag, Edit2, Trash2, Save } from 'lucide-react';
+import { X, Play, Square, MessageSquare, Clock, AlertCircle, CheckCircle2, Flag, Edit2, Trash2, Save, CheckSquare } from 'lucide-react';
 import { TodoItem, TodoStatus } from '@/types/todo';
 import { todosService } from '@/services/todos.service';
 import { toast } from 'sonner';
@@ -110,6 +110,20 @@ export function TaskDetailsModal({ todo, isOpen, onClose, onUpdate }: TaskDetail
       } catch (error) {
         toast.error('Failed to delete task');
       }
+    }
+  };
+
+  const handleToggleSubtask = async (index: number, currentStatus: boolean) => {
+    if (!todo) return;
+    try {
+      const updatedSubTasks = [...(todo.subTasks || [])];
+      if (updatedSubTasks[index]) {
+         updatedSubTasks[index].isCompleted = !currentStatus;
+         await todosService.updateTodo(todo._id, { subTasks: updatedSubTasks });
+         onUpdate();
+      }
+    } catch (error) {
+      toast.error('Failed to update subtask');
     }
   };
 
@@ -227,6 +241,42 @@ export function TaskDetailsModal({ todo, isOpen, onClose, onUpdate }: TaskDetail
                 </p>
               )}
             </div>
+
+            {todo.subTasks && todo.subTasks.length > 0 && (
+              <div className="border-t border-slate-100 dark:border-slate-800 pt-8">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
+                    <CheckSquare className="w-4 h-4" /> Subtasks
+                  </h3>
+                  <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2.5 py-1 rounded-full">
+                    {todo.progress || 0}%
+                  </span>
+                </div>
+                
+                <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full mb-6 overflow-hidden">
+                   <div 
+                     className="h-full bg-blue-500 rounded-full transition-all duration-500" 
+                     style={{ width: `${todo.progress || 0}%` }}
+                   />
+                </div>
+
+                <div className="space-y-3">
+                  {todo.subTasks.map((st, idx) => (
+                    <div key={st._id || idx} className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl">
+                      <input
+                        type="checkbox"
+                        checked={st.isCompleted}
+                        onChange={() => handleToggleSubtask(idx, st.isCompleted)}
+                        className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      />
+                      <span className={`text-sm font-medium ${st.isCompleted ? 'text-slate-400 line-through' : 'text-slate-700 dark:text-slate-200'}`}>
+                        {st.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="border-t border-slate-100 dark:border-slate-800 pt-8">
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4 uppercase tracking-wider flex items-center gap-2">
